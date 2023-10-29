@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Django CRUD - {% block title %}  {% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'third-party/gridjs/dist/theme/mermaid.min.css' %}">
+    <link rel="stylesheet" href="{% static 'third-party/filepond/dist/filepond.min.css'%}" type="text/css">
+    <link rel="stylesheet" href="{% static 'third-party/filepond/dist/filepond-plugin-image-preview.min.css'%}"
+          type="text/css">
+    <link rel="stylesheet" href="{% static 'third-party/sweetalert2/dist/sweetalert2.min.css'%}" type="text/css">
+    <script src="{% static 'third-party/sweetalert2/dist/sweetalert2.all.min.js'%}"></script>
+</head>
+
+<body>
+<div id="content">
+    {% block content %}
+
+    {% endblock %}
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="{% static 'third-party/sweetalert2/dist/sweetalert2.all.min.js'%}"></script>
+<script src="{% static 'third-party/filepond/dist/filepond-plugin-image-exif-orientation.min.js'%}"></script>
+<script src="{% static 'third-party/filepond/dist/filepond-plugin-image-preview.min.js'%}"></script>
+
+<script src="{% static 'third-party/filepond/dist/filepond-plugin-file-validate-type.js        ' %}"></script>
+
+<script src="{% static 'third-party/filepond/dist/filepond.min.js                              ' %}"></script>
+
+<script src="{% static 'third-party/gridjs/dist/gridjs.umd.js' %}"></script>
+{% block script %} {% endblock %}
+</html>

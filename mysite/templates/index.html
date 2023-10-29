@@ -1,0 +1,135 @@
+{% extends 'Base.html' %}
+{% load helper_tag %}
+
+
+{% block content %}
+<section class="px-3 py-5">
+    <div class="flex flex-col">
+        <div class="-my-2 overflow-x-auto ">
+            <div class="py-2 align-middle inline-block w-full sm:px-6 lg:px-8">
+                <div class="flex justify-end px-4 py-4">
+                    <a href="{% get_url_path "insertPage" %}" class="text-white bg-green-400 hover:bg-green-500 px-4 py-2 rounded antialiased font-bold">Insert Data</a>
+                </div>
+                    <div id="table"></div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block script %}
+    <script>
+
+    function generate_search(keyword){
+        return `{% url 'searchData' keyword=123 %}`.replace('123',keyword)
+    }
+    function edit(slug) {
+        Swal.fire({
+            title: 'Edit?',
+            text: "Apakah anda yakin ingin mengubah data ini?",
+            type: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Batal',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.value) {
+                // console.log(`${slug}`);
+                window.location.href = 'book/detail/'+slug;
+                // console.log(id);
+            }
+        })
+    }
+
+    function hapus(slug) {
+        Swal.fire({
+            title: 'Hapus?',
+            text: "Apakah anda yakin ingin menghapus data ini?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Batal',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.value) {
+                // console.log(`${slug}`);
+                window.location.href = 'delete/'+slug;
+                // console.log(id);
+            }
+        })
+    }
+
+    let table = document.getElementById('table');
+    if (table) {
+        /*
+    * GridJs Initialization
+    */
+
+        new gridjs.Grid({
+        columns: [
+            {
+            name:'Cover',
+            formatter: (img) => gridjs.html(`<center><img src='book-cover/${img}' height="300" /></center>`)
+        },
+            "ISBN", "Book Name","Published Date","Author" ,"Publisher",
+            {
+                name:"slug",
+                hidden:true,
+
+            },
+        {
+            name: 'Actions',
+            formatter: (_, row, ) => gridjs.html(
+                `<button class="text-white bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded antialiased font-bold"  onclick="edit('${row.cells[6].data}')">Ubah</button>
+                |
+                <button class="text-white bg-red-700 hover:bg-red-600 px-4 py-2 rounded antialiased font-bold"  onclick="hapus('${row.cells[6].data}')" >Hapus</button>`
+            ),
+
+        }],
+        className:{
+            td:'px-6 pb-12 whitespace-nowrap',
+            container: 'shadow overflow-hidden border-b border-gray-200 sm:rounded-lg',
+            table: 'min-w-full ',
+            // table:'w-full flex flex-row flex-no-wrap sm:bg-white rounded-lg overflow-hidden sm:shadow-lg my-5'
+            tbody:'bg-white ',
+            thead:'bg-gray-50',
+            paginationButtonCurrent: 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+            paginationButton: 'relative inline-flex items-center px-5 py-5 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'
+        },
+        language:{
+            search: {
+                placeholder: '🔍 Cari...'
+            },
+            pagination:{
+                previous: '⬅️',
+                next: '➡️',
+            }
+        },
+        sort: true,
+        pagination: {
+
+            enabled:true,
+            limit:10,
+
+        },
+        server: {
+            url: "{{ data_url }}",
+            then: data => data.map(book => [
+                book.fields.cover,book.fields.isbn,book.fields.book_name,book.fields.published_date,book.fields.author,book.fields.publisher,book.fields.slug
+            ]),
+            total: data => data.count,
+        },
+        search: {
+            server: {
+
+            url: (_, keyword) => generate_search(keyword)
+            }
+        },
+    }).render(document.getElementById("table"));
+}
+
+
+</script>
+{% endblock %}

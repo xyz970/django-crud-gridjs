@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load helper_tag %}
+{% load crispy_forms_tags %}
+
+{% block title %} Insert Data{% endblock %}
+{% block content %}
+    <section class="flex items-center justify-center">
+        <div class="w-1/2">
+            <div class="py-8 ">
+                <h2 class="font-bold text-2xl">Insert Data </h2>
+            </div>
+            <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data" method="POST"
+                  action="{% get_url_path 'bookStore' as url %} {{ url }}">
+                {% csrf_token %}
+                {%for field in form%}
+                    <div class="mb-4">{{field|as_crispy_field}}</div>
+                {%endfor%}
+                <div class="flex items-center justify-start">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            type="submit">
+                        Save
+                    </button>
+                    <div class="px-6">
+                        <button onclick="window.location.href='/'" type="button"
+                                class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
+                            Cancel
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
+{% block script %}
+    <script>
+        /*
+        * FilePond Initialization
+        */
+        const inputElement = document.querySelector('input[id="id_cover"]');
+        const token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        // FilePond.registerPlugin(
+        //     FilePondPluginImageExifOrientation,
+        //     FilePondPluginImagePreview,
+        // );
+        // const edit = document.getElementsByName
+        FilePond.registerPlugin(
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+            FilePondPluginFileValidateType,
+        );
+        let pond = FilePond.create(
+            inputElement, {
+                acceptedFileTypes: ['image/jpeg', 'image/png', 'image/jpg'],
+                // labelFileTypeNotAllowed: 'File Gambar tidak valid',
+                // fileValidateTypeLabelExpectedTypes: 'File harus berekstensi .jpeg/.jpg atau .png',
+                // labelFileProcessingComplete: `Upload Berhasil`,
+                //     labelTapToUndo: `ketuk untuk membatalkan`,
+                //     labelTapToCancel: `ketuk untuk membatalkan`,
+                //     labelFileProcessingError: `Gagal Memproses`,
+                //     labelTapToRetry:`ketuk untuk coba lagi`,
+                //     labelFileProcessing: `Sedang memproses`,
+                // labelIdle: `Seret dan tempel atau <span class="filepond--label-action">Pilih Foto</span>`,
+                credits: false,
+            });
+        var value = document.getElementsByClassName('filepond--data');
+
+        const file = pond.files;
+        pond.setOptions({
+            server: {
+                process: {
+                    url: "{{ tempUpload }}",
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': "{{ csrf_token }}",
+                    },
+                },
+                revert: {
+                    url: "/temp/revert/",
+                    method: 'GET',
+                },
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token }}",
+                }
+            }
+        });
+    </script>
+
+{% endblock %}
